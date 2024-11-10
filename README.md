@@ -12,9 +12,9 @@ Antes de executar o programa, é necessário garantir que você possui o seguint
 - A biblioteca **PySimpleGUI**
 
 ---
-## **Funcionalidades**
+# **Funcionalidades**
 
-# *Personalização da Senha*
+## *Personalização da Senha*
 O gerador permite configurar:
 
 - Adicionar Letras Maiúsculas: Inclui letras maiúsculas na senha.

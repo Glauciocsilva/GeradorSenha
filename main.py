@@ -1,72 +1,64 @@
 import PySimpleGUI as sg
 import string
 import random
- 
+
 sg.theme('Darkgrey16')
+
 layout = [
-   [sg.Text('Adicionar Letras:     ') , sg.Checkbox(key='Adicionar Letras', text='',default = False)] ,
-   [sg.Text('Adicionar Números: ') ,sg.Checkbox(key='Adicionar Números', text='',default = False)],
-   [sg.Text('Adicionar Especiais:') ,sg.Checkbox(key='Adicionar Especiais', text='',default = False)],
-   [sg.Text('')],
-   [sg.Text('Password Length')],
-   [sg.Slider(key='len_senha',range=(6,64),default_value=6,orientation='h',size=(31.5,10))],
-   [sg.Text('')],
-   [sg.Text('Senha Gerada')],
-   [sg.Input(key='output',size=40)],
-   [sg.Text('')],
-   [sg.Button('Gerar Senha') ,sg.Text('      '), sg.Button('Copiar'),sg.Text('     '), sg.Button('Cancelar')]
+    [sg.Column([
+        [sg.Text('Adicionar Letras Maiúsculas:',size=(25, 1)), sg.Checkbox(key='maiuscula', text='', default=False, pad=(5, 0))],
+        [sg.Text('Adicionar Letras Minúsculas:',size=(25, 1)), sg.Checkbox(key='minuscula', text='', default=False, pad=(5, 0))],
+        [sg.Text('Adicionar Caracteres Especiais:',size=(25, 1)), sg.Checkbox(key='especiais', text='', default=False, pad=(5, 0))]
+    ], pad=(0, 10))],
+    [sg.Text('Tamanho da Senha:')],
+    [sg.Slider(key='len_senha', range=(8, 64), default_value=8, orientation='h', size=(27, 10))],
+    [sg.Text('')],
+    [sg.Text('Senha Gerada')],
+    [sg.Multiline(key='output', size=(34, 3),write_only=False,no_scrollbar=True)],
+    [sg.Button('Gerar Senha',pad=(10, 10)), sg.Button('Copiar',pad=(10, 10)), sg.Button('Cancelar',pad=(10, 10))]
 ]
- 
-window = sg.Window('Gerador de Senha', layout=layout )
- 
-def gerar_senha(len_senha,add_maiuscula,add_minuscula,add_especial):
-    letras = string.ascii_uppercase + string.ascii_lowercase
+sg.Input()
+window = sg.Window('Gerador de Senha', layout=layout)
+
+def gerar_senha(len_senha, add_maiuscula, add_minuscula, add_especial):
+    letras_maiusculas = string.ascii_uppercase
+    letras_minusculas = string.ascii_lowercase
     caracteres_especiais = string.punctuation
- 
+    numeros = string.digits
+
+    num_maiuscula = int(len_senha * 0.20)
+    num_minuscula = int(len_senha * 0.20)
+    num_especiais = int(len_senha * 0.15)
+    num_numeros = len_senha - (num_maiuscula + num_minuscula + num_especiais)
+    
     senha_gerada = []
- 
-    for i in range(add_maiuscula):
-        senha_gerada.append(random.choice(letras_maiusculas))
- 
-    for input in range(add_minuscula):
-        senha_gerada.append(random.choice(letras_minusculas))
-       
-    for i in range(add_especial):
-        senha_gerada.append(random.choice(caracteres_especiais))
- 
- 
-    while len(senha_gerada) < len_senha:
-        senha_gerada.append(str(random.randint(0,9)))
-       
+
+    if add_maiuscula:
+        senha_gerada.extend(random.choices(letras_maiusculas,k=num_maiuscula))
+    if add_minuscula:
+        senha_gerada.extend(random.choices(letras_minusculas,k=num_minuscula))
+    if add_especial:
+        senha_gerada.extend(random.choices(caracteres_especiais,k=num_especiais))
+
+    senha_gerada.extend(random.choices(numeros , k=num_numeros))
+        
     random.shuffle(senha_gerada)
-    senha = ''.join(senha_gerada)  
+    senha = ''.join(senha_gerada) 
     return senha
- 
+
 while True:
-    event,values = window.read()
+    event, values = window.read()
     if event == sg.WINDOW_CLOSED or event == 'Cancelar':
         break
     elif event == 'Gerar Senha':
-        len_senha = values['len_senha']
-        try:
-            if not len_senha.isdigit():
-                sg.popup("Favor digite apenas números.")
-                continue
-            else:
-                len_senha = int(values['len_senha'])
-                if len_senha < 6:
-                    sg.popup("O tamanho da senha deve ter no mínimo 6 digitos. Tente Novamente!")
-                    continue      
-        except:
-            continue
- 
-        add_maiuscula = int(values['maiuscula'])
-        add_minuscula = int(values['minuscula'])
-        add_especial  = int(values['especial'])
-       
-        senha = gerar_senha(len_senha,add_maiuscula,add_minuscula,add_especial)
+        len_senha = int(values['len_senha'])
+        add_maiuscula = values['maiuscula']
+        add_minuscula = values['minuscula']
+        add_especial = values['especiais']
+
+        senha = gerar_senha(len_senha, add_maiuscula, add_minuscula, add_especial)
         window['output'].update(senha)
-   
+
     elif event == 'Copiar':
         sg.clipboard_set(values['output'])
         sg.popup('Senha copiada para a área de transferência!')

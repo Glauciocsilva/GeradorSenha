@@ -14,7 +14,7 @@ layout = [
     [sg.Slider(key='len_senha', range=(8, 64), default_value=8, orientation='h', size=(27, 10))],
     [sg.Text('')],
     [sg.Text('Senha Gerada')],
-    [sg.Multiline(key='output', size=(34, 3),write_only=False,no_scrollbar=True)],
+    [sg.Multiline(key='output', size=(34, 3),disabled=True,no_scrollbar=True)],
     [sg.Button('Gerar Senha',pad=(10, 10)), sg.Button('Copiar',pad=(10, 10)), sg.Button('Cancelar',pad=(10, 10))]
 ]
 sg.Input()
